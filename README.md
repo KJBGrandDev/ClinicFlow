@@ -27,7 +27,7 @@
 
 ### 1. 📋 Front-Desk Reception & Queue Command Board
 - **Patient Registration & Lookup:** Fast autocomplete search across Name, Patient Number (`PT-YYYY-XXXXX`), and Contact Number.
-- **Defensive Boundary Validation:** Enforces legal Philippine phone numbers and validates Birth Dates (blocking unconfigured `1/1/1800` defaults and future dates).
+- **Defensive Boundary Validation:** Enforces valid contact numbers and validates Birth Dates (blocking unconfigured `1/1/1800` defaults and future dates).
 - **Conflict Guard Engine:** Evaluates attending doctor schedules in real-time, detecting and warning of double-bookings or concurrent consultations.
 - **Lobby Queue Ticket Issuance:** Atomically assigns sequential tickets (`Q-01`, `Q-02`, etc.) upon patient physical check-in using SQL hold locks.
 - **Room Status Station Cards:** Live color-coded room status cards (`AVAILABLE`, `AWAITING DOCTOR`, `IN SERVICE`, `EMERGENCY LEAVE`).
@@ -51,7 +51,7 @@
 
 ### 4. 💳 Cashier Point-of-Sale Billing & Settlement
 - **Automated Bill Compilation:** Gathers consultation fee and itemized pharmacy prescription lines into one unified invoice.
-- **Statutory Discount Engine:** Seamless application of Republic Act 9994 (Senior Citizen 20% VAT-exempt), PWD 20%, PhilHealth, Employee, and HMO discounts.
+- **Statutory Discount Engine:** Seamless application of statutory exemptions (Senior Citizen 20% VAT-exempt, PWD 20%), PhilHealth, Employee, and HMO discounts.
 - **Underpayment Safety Guard:** Prevents receipt issuance if tendered cash is less than the net amount due.
 - **Official Receipt Generation:** Generates unique, tamper-proof receipts (`OR-YYYY-XXXXX`) and logs transaction audits.
 
@@ -146,19 +146,22 @@ Success Rate         : 100%
    ```sql
    CREATE DATABASE ClinicFlowUnifiedDb;
    ```
-3. Execute the migration script located at `ClinicFlow-Unified/Database/Schema_Migration_v2.sql` to initialize all 25 tables, check constraints, and default indexes.
+3. Execute the database migration scripts located in `ClinicFlow-Unified/Database/` to initialize all tables, constraints, and initial roles.
 
-### 2. Verify Connection String
-Verify or edit `ClinicFlow-Unified/Data/DatabaseConnection.cs`:
-```csharp
-private const string DefaultConnectionString = 
-    "Server=localhost;Database=ClinicFlowUnifiedDb;Trusted_Connection=True;TrustServerCertificate=True;";
+### 2. Configuration
+Configure your SQL Server connection string in `ClinicFlow-Unified/appsettings.json` or `ClinicFlow-Unified/Data/DatabaseConnection.cs` using Windows Authentication or secure credentials:
+```json
+{
+  "ConnectionStrings": {
+    "ClinicFlowDb": "Server=localhost;Database=ClinicFlowUnifiedDb;Trusted_Connection=True;TrustServerCertificate=True;"
+  }
+}
 ```
 
 ### 3. Build & Run
 Open PowerShell in the repository root:
 ```powershell
-# Restore & build solution
+# Restore dependencies and build solution
 dotnet build -c Release
 
 # Run automated integration test runner
@@ -171,14 +174,19 @@ dotnet run
 
 ---
 
-## 🔑 Default System Seed Accounts
+## 🔐 Role-Based Access & Initial Provisioning
 
-| Username | Role | Full Name | Default Password | Access Scope |
-| :--- | :--- | :--- | :--- | :--- |
-| `admin` | **Admin** | Kent Jason Basalan | `Admin@123` | Full System Administration, Audit Logs, Staff Rosters |
-| `drsantos` | **Doctor** | Dr. Juan Santos | `Doc@123` | Physician Consultation Room, EMR, Prescriptions, Routine |
-| `secretary` | **Secretary** | Ana Reyes | `Sec@123` | Patient Registration, Scheduling, Lobby Queue, Triage Hub |
-| `pharmacist`| **Pharmacist**| Maria Santos, RPh | `Pharm@123` | Dispensing Station, Inventory Restock, Batch Disposal |
+ClinicFlow-Unified implements strict Role-Based Access Control (RBAC). Upon initial setup, test role accounts are provisioned to facilitate system evaluation:
+
+| User Role | Access Scope & Responsibilities | Provisioning Method |
+| :--- | :--- | :--- |
+| **Administrator** | User Account Management, Audit Logs, Staff Rosters, System Settings | Initial Setup Wizard / Database Script |
+| **Physician / Doctor** | Patient Queue, SOAP Notes, ICD-10 Diagnosis, E-Prescriptions, Practice Routine | Admin Provisioning |
+| **Secretary / Front-Desk** | Patient Registration, Appointments, Lobby Queue, Emergency Triage Center | Admin Provisioning |
+| **Central Pharmacist** | Paid Dispensing Queue, Batch Restock, FEFO Inventory, Chemical Disposal | Admin Provisioning |
+| **Cashier / Billing Officer**| Pending Checkout Queue, Point-of-Sale Settlement, Official Receipts | Admin Provisioning |
+
+> **Security Notice:** For production deployments, all initial passwords must be updated via the built-in `PasswordResetDialog` upon first login. Authentication enforces BCrypt encryption and automated 15-minute lockouts after 5 consecutive failed attempts.
 
 ---
 
