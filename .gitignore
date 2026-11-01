@@ -1,0 +1,31 @@
+## Build & Environment
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+.vs/
+.idea/
+*.DotSettings.user
+
+## Temporary & Scratch Files
+*.log
+*.tmp
+*.bak
+[Tt]humbs.db
+[Ee]hthumbs.db
+
+## OS Generated
+Desktop.ini
+$RECYCLE.BIN/
+.DS_Store
+
+## Visual Studio Code / JetBrains
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.swp
+*~
