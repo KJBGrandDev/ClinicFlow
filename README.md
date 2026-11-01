@@ -193,7 +193,7 @@ ClinicFlow-Unified implements strict Role-Based Access Control (RBAC). Upon init
 ## 👥 Authors & Academic Contributors
 
 - **Kent Jason Basalan** — *Lead Software Architect & Database Administrator* ([@KJBGrandDev](https://github.com/KJBGrandDev))
-- **ClinicFlow Development Team** — *BSIT / BSCS Capstone Project 2025–2026*
+- **ClinicFlow Development Team** — *BSIT Event-Driven Programming Project (Academic Year 2025–2026)*
 
 ---
 
